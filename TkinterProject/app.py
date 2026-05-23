@@ -1,7 +1,7 @@
 import tkinter as tk
-from Menus.start_menu import StartMenu
-from Menus.home_menu import HomeMenu
-from Menus.login_menu import LoginMenu
+from startup_menu import StartupMenu
+from home_menu import HomeMenu
+from login_menu import LoginMenu
 
 class App(tk.Tk):
     def __init__(self):
@@ -13,19 +13,13 @@ class App(tk.Tk):
         self.window_h = 700
         self.current_frame = None
         self._center_window()
-        self.load_start_menu()
+        
+        self.change_frame(StartupMenu)
 
-    def load_login_menu(self):
+    def change_frame(self, frame_cls):
         self.delete_ui()
-        self.current_frame = LoginMenu(self)
-
-    def load_start_menu(self):
-        self.delete_ui()
-        self.current_frame = StartMenu(self, start_command=self.load_login_menu)
-
-    def load_home_menu(self):
-        self.delete_ui()
-        self.current_frame = HomeMenu(self)
+        self.current_frame = frame_cls(self)
+        self.current_frame.place(relx=0.5, rely=0.5, relheight=1, relwidth=1, anchor='center')
         
     def delete_ui(self):
         if self.current_frame is not None:
