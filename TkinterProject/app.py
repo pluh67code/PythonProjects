@@ -1,14 +1,13 @@
 import tkinter as tk
+from constants import *
 from startup_menu import StartupMenu
-from home_menu import HomeMenu
-from login_menu import LoginMenu
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("WorkoutApp")
         self.resizable(False, False)
-        self.configure(bg="grey")
+        self.configure(bg=BG_COLOR)
         self.window_w = 1000
         self.window_h = 700
         self.current_frame = None
@@ -16,9 +15,9 @@ class App(tk.Tk):
         
         self.change_frame(StartupMenu)
 
-    def change_frame(self, frame_cls):
+    def change_frame(self, frame_cls, *args):
         self.delete_ui()
-        self.current_frame = frame_cls(self)
+        self.current_frame = frame_cls(self, *args)
         self.current_frame.place(relx=0.5, rely=0.5, relheight=1, relwidth=1, anchor='center')
         
     def delete_ui(self):

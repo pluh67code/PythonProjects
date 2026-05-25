@@ -1,12 +1,10 @@
 import tkinter as tk
+from constants import *
 from login_menu import LoginMenu
-BG_COLOR = "grey"
-TEXT_COLOR = "white"
 
 class StartupMenu(tk.Frame):
     def __init__(self, app):
         super().__init__(app, bg=BG_COLOR)
-        self.app = app
         self.main_title = tk.Label(self, text="Workout App", font=("Arial", 60), bg=BG_COLOR, fg=TEXT_COLOR)
         self.main_title.place(relx=0.5, rely=0.2, anchor='center', relheight=0.2, relwidth=0.6)
 

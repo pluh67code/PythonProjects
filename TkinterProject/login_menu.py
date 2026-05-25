@@ -1,15 +1,12 @@
 import tkinter as tk
-from user import User
-import pickle
-
-BG_COLOR = "grey"
-TEXT_COLOR = "white"
-file = "Data/user_data.pkl"
+from constants import *
+from home_menu import HomeMenu
+from user_repository import save_user, find_user, username_taken, valid_entries
 
 class LoginMenu(tk.Frame):
     def __init__(self, app):
         super().__init__(app, bg=BG_COLOR)
-        self.file = file
+        self.app = app
         self.title_label = tk.Label(self, text="Login To The App", font=("Arial", 60), bg=BG_COLOR, fg=TEXT_COLOR)
         self.username_label = tk.Label(self, text="Username:", font=("Arial", 20), bg=BG_COLOR, fg=TEXT_COLOR)
         self.password_label = tk.Label(self, text="Password:", font=("Arial", 20), bg=BG_COLOR, fg=TEXT_COLOR)
@@ -25,58 +22,37 @@ class LoginMenu(tk.Frame):
         self.password_entry.place(relx=0.55, rely=0.5, relheight=0.05, relwidth=0.2, anchor='center')
         
         self.login_button = tk.Button(self, text="Login", font=("Arial", 20), bg=BG_COLOR, fg=TEXT_COLOR, 
-        command=lambda: login(self.username_entry.get(), self.password_entry.get(), app))
+        command=lambda: self._on_login(self.username_entry.get().strip(), self.password_entry.get().strip()))
+
         self.signup_button = tk.Button(self, text="Sign Up", font=("Arial", 20), bg=BG_COLOR, fg=TEXT_COLOR, 
-        command=lambda: signup(self.username_entry.get(), self.password_entry.get(), app))
+        command=lambda: self._on_signup(self.username_entry.get().strip(), self.password_entry.get().strip()))
 
         self.login_button.place(relx=0.5, rely=0.65, relheight=0.075, relwidth=0.3, anchor='center')
         self.signup_button.place(relx=0.5, rely=0.75, relheight=0.075, relwidth=0.3, anchor='center')
 
-        self.place(relx=0.5, rely=0.5, relheight=1, relwidth=1, anchor='center')
+        self.log_label = tk.Label(self, text="", font=("Arial", 15), bg=BG_COLOR, fg=TEXT_COLOR)
+        self.log_label.place(relx=0.5, rely=0.9, anchor='center', relwidth=0.6, relheight=0.1)
 
-def login(username, password, app):
-    users = load_users_from_file()
-    for user in users:
-        if user.username == username and user.password == password:
-            print("logged in!")
-            break
-    
+    def _on_login(self, username, password):
+        user = find_user(username, password)
+        if user:
+            self.app.change_frame(HomeMenu, user)
+        else:
+            self.log("Account not found")
 
-def signup(username, password, app):
-    if not valid_entries(username, password): return
-
-    users = load_users_from_file()
-    for user in users:
-        if user.username == username:
-            print("Username taken!")
+    def _on_signup(self, username, password):
+        if username_taken(username):
+            self.log("Username taken")
             return
 
-    print("ok u signed up")
-    users.append(User(username, password))
-    with open(file, "wb") as f:
-        pickle.dump(users, f)
+        if not valid_entries(username, password):
+            self.log("Invalid entries, P.S. password must contain at least 1 number")
+            return
+        
+        save_user(username, password)
+        self.log(f"Signed up as {username}, login to enter!")
+        
+    def log(self, txt):
+        self.log_label.config(text=txt)
     
-
-def load_users_from_file():
-    try:
-        with open(file, "rb") as f:
-            users = pickle.load(f)
-    except (EOFError, FileNotFoundError):
-        users = []
-    
-    return users
-def valid_entries(username, password):
-    if not username:
-        print("Must enter a username")
-        return False
-    if not password:
-        print("Must enter a password")
-        return False
-    
-    # username and password inputs are there:
-    if any(char.isdigit() for char in password):
-        return True
-
-    print("Password must contain at least 1 number")
-    return False
     
