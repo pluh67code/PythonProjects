@@ -13,4 +13,6 @@ class StartupMenu(tk.Frame):
 
         self.exit_button = tk.Button(self, text="Exit", font=("Arial", 25), bg=BG_COLOR, fg=TEXT_COLOR, command=app.destroy)
         self.exit_button.place(relx=0.5, rely=0.62, anchor='center', relheight=0.1, relwidth=0.3)
+
+        
     

@@ -1,31 +1,38 @@
 from user import User
-import pickle
-file = "user_data.pkl"
+import json
+file = "user_data.json"
 
-def load_users():
+def load_users() -> dict[str, dict]:
     try:
-        with open(file, "rb") as f:
-            users = pickle.load(f)
-    except EOFError: # end of file error for if its empty
-        users = []
+        with open(file, "r") as f:
+            users = json.load(f)
+    except:
+        users = {}
+
     return users
 
-def save_user(username, password):
+def save_user(username: str, password: str):
+    new_user = User(username, password)
     users = load_users()
-    users.append(User(username, password))
+    users[username] = new_user.to_dict()
 
-    with open(file, "wb") as f:
-        pickle.dump(users, f)
+    with open(file, "w") as f:
+        json.dump(users, f)
 
-def find_user(username, password):
-    users = load_users()
-    for user in users:
-        if user.username == username and user.password == password:
-            return user
+def find_user(username: str, password: str) -> User | None:
+    try: 
+        with open(file, "r") as f:
+            users = json.load(f)
+    except:
+        return None
+
+    for user_key, user_dct in users.items():
+        if username == user_key and password == user_dct["password"]:
+            return User.from_dict(user_dct)
     return None
 
-def username_taken(username):
-    return username in [user.username for user in load_users()]
+def username_taken(username: str) -> bool:
+    return username in load_users().keys()
 
-def valid_entries(username, password):
+def valid_entries(username: str, password: str) -> bool:
     return username and password and any(char.isdigit() for char in password)
